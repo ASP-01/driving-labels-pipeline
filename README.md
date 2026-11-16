@@ -1,5 +1,7 @@
 # Driving labels pipeline
 
+![ci](https://github.com/ASP-01/driving-labels-pipeline/actions/workflows/ci.yml/badge.svg)
+
 A PySpark and Elasticsearch pipeline that turns Open Images bounding-box labels for driving-scene classes (cars, people, traffic lights, signs, bikes, buses and so on) into a searchable index, with data-quality checks and a pandas analysis of label balance.
 
 ```
@@ -8,6 +10,20 @@ Open Images CSVs ──> PySpark job ──> Parquet ──> Elasticsearch ─�
                       per-image         images/                      
                       features)              └──> pandas analysis (class balance, box sizes)
 ```
+
+## Results (Open Images validation split)
+
+| Metric | Value |
+|---|---|
+| Input box labels | 303,980 |
+| Rows rejected by quality rules | 0 (clean source data) |
+| Driving-scene boxes / images | 28,222 / 11,877 |
+| Spark job runtime (MacBook Air, local mode) | 9.1 s |
+| Docs indexed into Elasticsearch / failed | 11,877 / 0 |
+| Class imbalance (person vs. stop sign) | 1,289x |
+| Images with a car and 3+ boxes | 1,633 |
+
+The imbalance is the main finding: a detector trained on this data sees about 1,300 people for every stop sign, so the rare classes would need sampling or targeted labeling before training.
 
 ## What it does
 
